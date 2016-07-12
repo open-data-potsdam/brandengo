@@ -10,29 +10,36 @@ $(function() {
 
 function getStations(location) {
 	const urlWithLocation = baseUrl + `/stations/nearby?latitude=${location.coords.latitude}&longitude=${location.coords.longitude}`
-	$.getJSON(urlWithLocation, printStations);
+	fetch(urlWithLocation)
+		.then(r => r.json())
+		.then(printStations);
 }
 
 function printStations(stations) {
-	results = stations.map(getDepartures);
+	Promise.all(stations.map(getDepartures))
+		.then(r => $('#stations').append(r));
 }
 
 function getDepartures(station) {
 	const urlWithId = baseUrl + `/stations/${station.id}/departures`;
-	$.getJSON(urlWithId, departures => buildStationDiv(station, departures));
+	return fetch(urlWithId)
+		.then(r => r.json())
+		.then(departures => buildStationDiv(station, departures));
 }
 
 function buildStationDiv(station, departures) {
 	const div = $('<div></div>')
+	const stationInfoDiv = div.append('<div></div>')
+		.addClass('stationInfo')
 		.append(`<div>${station.name}</div>`)
 		.append(`<div>${station.distance}</div>`)
 		.append('<ul></ul');
 
 	for (let product in station.products) {
-		div.append(`<li>${product} ${station.products[product]}</li>`)
+		stationInfoDiv.append(`<li>${product} ${station.products[product]}</li>`)
 	}
 
 	div.append(JSON.stringify(departures));
 
-	$('#stations').append(div);
+	return div;
 }
