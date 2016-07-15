@@ -1,0 +1,26 @@
+body {
+	text-align: center;
+	font-family: 'Open Sans', sans-serif !important;
+}
+
+table {
+	text-align: left;
+	margin: 0 auto;
+}
+
+th, td {
+	padding: 0.75em;
+}
+
+tr:nth-child(even), thead tr{
+	background: #f9f9f9
+}
+
+img {
+	height: 3em;
+}
+
+h1, h2 {
+	color: #1ABC9C;
+	font-weight: 300;
+}

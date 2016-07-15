@@ -1,0 +1,25 @@
+{
+  "name": "brandengo",
+  "description": "",
+  "main": "index.js",
+  "authors": [
+    "Johannes Filter <hi@jfilter.de>"
+  ],
+  "license": "ISC",
+  "homepage": "",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "app/bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "bootstrap": "^3.3.6",
+    "jquery": "^3.1.0"
+  },
+  "resolutions": {
+    "jquery": "1.9.1 - 2"
+  }
+}
