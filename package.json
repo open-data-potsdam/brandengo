@@ -16,7 +16,9 @@
     "webpack": "^1.13.1"
   },
   "dependencies": {
+    "babel-polyfill": "^6.9.1",
     "react": "^15.2.1",
-    "react-dom": "^15.2.1"
+    "react-dom": "^15.2.1",
+    "whatwg-fetch": "^1.0.0"
   }
 }
