@@ -2,46 +2,71 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 
 const baseUrl = 'https://transport.rest';
+const maxNStations = 50;
+const initialNStations = 3;
+
 
 class StationBox extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			nStations: 5,
 			maxMinutesToDeparture: 120,
-			stations: [],
-			currentFocus: 0,
+			currentFocus: null,
 			latitude: props.latitude,
 			longitude: props.longitude,
 		};
-		this.fetchStations();      
+		this.hammerjsElement = new Hammer(document.getElementById('stationBox'));
+		this.stations = [];
+		this.stationsWithInfo = [];
+		this.fetchStations();
 	}
 
 	fetchStations() {
-		const urlWithLocation = `${baseUrl}/stations/nearby?latitude=${this.state.latitude}&longitude=${this.state.longitude}&results=${this.state.nStations}`;
+		const urlWithLocation = `${baseUrl}/stations/nearby?latitude=${this.state.latitude}&longitude=${this.state.longitude}&results=${maxNStations}`;
 
 		fetch(urlWithLocation)
 			.then(r => r.ok ? r.json() : Promise.reject(r))
-			.then(stationsWithoutDepartures => Promise.all(stationsWithoutDepartures.map(this.getDepartures.bind(this))))
-			.then(stations => {
-				console.log(stations);
-				this.setState({ stations: stations })
+			.then(stationsWithoutDepartures => {
+				this.stations = stationsWithoutDepartures;
+				const initialStations = stationsWithoutDepartures.slice(0, initialNStations);
+				Promise.all(initialStations.map(this.getDepartures.bind(this)))
+					.then(stations => {
+						this.stationsWithInfo = stations;
+						this.setState({ currentFocus: 0 });
+					});
 			})
-			// .catch(err => console.log(err));
+			.catch(err => console.log(err));
 	}
 
 	getDepartures(station) {
 		const urlWithId = `${baseUrl}/stations/${station.id}/departures
 			?duration=${this.state.maxMinutesToDeparture}`;
 
-		return fetch(urlWithId)
-			.then(r => r.ok ? r.json() : Promise.reject(r))
-			.then(function(departures ) { return  { station: station, departures: departures } })
+		return new Promise((resolve, reject) => {
+			fetch(urlWithId)
+				.then(r => r.ok ? r.json() : reject(r))
+				.then(function(departures) { resolve({ station: station, departures: departures }) })
+		})
 	}
 
+	componentDidMount() {
+		// subscribe to events
+		this.hammerjsElement.on('swipeleft', (e) => {
+			const n = this.stationsWithInfo.length; // number of avaible station+infos
+			this.getDepartures(this.stations[n])
+				.then(newStationInfo => this.stationsWithInfo.push(newStationInfo));
+			this.setState({ currentFocus: this.state.currentFocus + 1 });
+		});
+
+		this.hammerjsElement.on('swiperight', (e) => {
+			this.setState({ currentFocus: this.state.currentFocus - 1 });
+		});    
+	}
+
+
 	render() {
-		if(this.state.stations.length > 0) {
-			const currentStation = this.state.stations[this.state.currentFocus];
+		if(this.stationsWithInfo.length > 0) {
+			const currentStation = this.stationsWithInfo[this.state.currentFocus];
 			return <Station departures={currentStation.departures} station={currentStation.station}/>
 		}
 		return null;
