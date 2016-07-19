@@ -1,9 +1,11 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
+
 
 const baseUrl = 'https://transport.rest';
 const maxNStations = 50;
-const initialNStations = 3;
+const initialNStations = 2;
 
 
 class StationBox extends React.Component {
@@ -52,6 +54,7 @@ class StationBox extends React.Component {
 	componentDidMount() {
 		// subscribe to events
 		this.hammerjsElement.on('swipeleft', (e) => {
+			e.preventDefault();
 			const n = this.stationsWithInfo.length; // number of avaible station+infos
 			this.getDepartures(this.stations[n])
 				.then(newStationInfo => this.stationsWithInfo.push(newStationInfo));
@@ -59,7 +62,9 @@ class StationBox extends React.Component {
 		});
 
 		this.hammerjsElement.on('swiperight', (e) => {
-			this.setState({ currentFocus: this.state.currentFocus - 1 });
+			e.preventDefault();
+			const newfocus = Math.max(0, this.state.currentFocus - 1);
+			this.setState({ currentFocus: newfocus });
 		});    
 	}
 
@@ -67,7 +72,9 @@ class StationBox extends React.Component {
 	render() {
 		if(this.stationsWithInfo.length > 0) {
 			const currentStation = this.stationsWithInfo[this.state.currentFocus];
-			return <Station departures={currentStation.departures} station={currentStation.station}/>
+			return <ReactCSSTransitionGroup transitionName="example" transitionEnterTimeout={500} transitionLeaveTimeout={1}>
+				<Station key={currentStation.station.name} departures={currentStation.departures} station={currentStation.station}/>
+			</ReactCSSTransitionGroup>
 		}
 		return null;
 	}
