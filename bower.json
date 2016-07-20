@@ -16,11 +16,7 @@
     "tests"
   ],
   "dependencies": {
-    "bootstrap": "^3.3.6",
     "jquery": "^3.1.0",
     "hammerjs": "^2.0.8"
   },
-  "resolutions": {
-    "jquery": "1.9.1 - 2"
-  }
 }

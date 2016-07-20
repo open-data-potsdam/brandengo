@@ -17,7 +17,8 @@ class StationBox extends React.Component {
 			latitude: props.latitude,
 			longitude: props.longitude,
 		};
-		this.hammerjsElement = new Hammer(document.getElementById('stationBox'));
+		// this.hammerjsElement = new Hammer(document.getElementById('stationBox'));
+		this.hammerjsElement = new Hammer(document);
 		this.stations = [];
 		this.stationsWithInfo = [];
 		this.fetchStations();
@@ -48,8 +49,8 @@ class StationBox extends React.Component {
 		return new Promise((resolve, reject) => {
 			fetch(urlWithId)
 				// .then(r => r.ok ? r.json() : reject(r))
-				.then(r => r.ok ? r.json() : resolve({ station: station, departures: [] }))
-				.then(function(departures) { resolve({ station: station, departures: departures }) })
+				.then(r => r.ok ? r.json() : resolve({ station: station, departures: [], error: 'with get Departure' }))
+				.then(function(departures) { resolve({ station: station, departures: departures, error: '' }) })
 		})
 	}
 
@@ -75,7 +76,7 @@ class StationBox extends React.Component {
 		if(this.stationsWithInfo.length > 0) {
 			const currentStation = this.stationsWithInfo[this.state.currentFocus];
 			return <ReactCSSTransitionGroup transitionName="example" transitionEnterTimeout={500} transitionLeaveTimeout={1}>
-				<Station key={currentStation.station.name} departures={currentStation.departures} station={currentStation.station}/>
+				<Station key={currentStation.station.name} departures={currentStation.departures} station={currentStation.station} error={currentStation.error}/>
 			</ReactCSSTransitionGroup>
 		}
 		return null;
@@ -85,22 +86,35 @@ class StationBox extends React.Component {
 class Station extends React.Component {
 
 	render() {
-	return <div>
-			<h2>{this.props.station.name}</h2>
-			<table>
-				<thead>
-					<tr>
-						<th>Line</th>
-						<th>Destination</th>
-						<th>Departure</th>
-					</tr>
-						
-				</thead>
-				<tbody>
-					{this.props.departures.map(x => <Departure departure={x} /> )}
-				</tbody>
-			</table>
-		</div>;
+		if (this.props.departures.length) {
+			return <div>
+					<h2>{this.props.station.name}</h2>
+					<table>
+						<thead>
+							<tr>
+								<th>Line</th>
+								<th>Destination</th>
+								<th>Departure</th>
+							</tr>
+						</thead>
+						<tbody>
+							{this.props.departures.map(x => <Departure departure={x} /> )}
+						</tbody>
+					</table>
+				</div>;
+		} else {
+			if (this.props.error !== '') {
+				return <div>
+					<h2>{this.props.station.name}</h2>
+					<p>Error: {this.props.error}</p>
+					</div>;
+			} else {
+				return <div>
+					<h2>{this.props.station.name}</h2>
+					<p>Currently no departures</p>
+					</div>;
+			}
+		}
 	}
 }
 

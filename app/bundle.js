@@ -9108,7 +9108,8 @@
 				latitude: props.latitude,
 				longitude: props.longitude
 			};
-			_this.hammerjsElement = new Hammer(document.getElementById('stationBox'));
+			// this.hammerjsElement = new Hammer(document.getElementById('stationBox'));
+			_this.hammerjsElement = new Hammer(document);
 			_this.stations = [];
 			_this.stationsWithInfo = [];
 			_this.fetchStations();
@@ -9147,9 +9148,9 @@
 					fetch(urlWithId)
 					// .then(r => r.ok ? r.json() : reject(r))
 					.then(function (r) {
-						return r.ok ? r.json() : resolve({ station: station, departures: [] });
+						return r.ok ? r.json() : resolve({ station: station, departures: [], error: 'with get Departure' });
 					}).then(function (departures) {
-						resolve({ station: station, departures: departures });
+						resolve({ station: station, departures: departures, error: '' });
 					});
 				});
 			}
@@ -9182,7 +9183,7 @@
 					return _react2.default.createElement(
 						_reactAddonsCssTransitionGroup2.default,
 						{ transitionName: 'example', transitionEnterTimeout: 500, transitionLeaveTimeout: 1 },
-						_react2.default.createElement(Station, { key: currentStation.station.name, departures: currentStation.departures, station: currentStation.station })
+						_react2.default.createElement(Station, { key: currentStation.station.name, departures: currentStation.departures, station: currentStation.station, error: currentStation.error })
 					);
 				}
 				return null;
@@ -9204,49 +9205,84 @@
 		_createClass(Station, [{
 			key: 'render',
 			value: function render() {
-				return _react2.default.createElement(
-					'div',
-					null,
-					_react2.default.createElement(
-						'h2',
-						null,
-						this.props.station.name
-					),
-					_react2.default.createElement(
-						'table',
+				if (this.props.departures.length) {
+					return _react2.default.createElement(
+						'div',
 						null,
 						_react2.default.createElement(
-							'thead',
+							'h2',
 							null,
-							_react2.default.createElement(
-								'tr',
-								null,
-								_react2.default.createElement(
-									'th',
-									null,
-									'Line'
-								),
-								_react2.default.createElement(
-									'th',
-									null,
-									'Destination'
-								),
-								_react2.default.createElement(
-									'th',
-									null,
-									'Departure'
-								)
-							)
+							this.props.station.name
 						),
 						_react2.default.createElement(
-							'tbody',
+							'table',
 							null,
-							this.props.departures.map(function (x) {
-								return _react2.default.createElement(Departure, { departure: x });
-							})
+							_react2.default.createElement(
+								'thead',
+								null,
+								_react2.default.createElement(
+									'tr',
+									null,
+									_react2.default.createElement(
+										'th',
+										null,
+										'Line'
+									),
+									_react2.default.createElement(
+										'th',
+										null,
+										'Destination'
+									),
+									_react2.default.createElement(
+										'th',
+										null,
+										'Departure'
+									)
+								)
+							),
+							_react2.default.createElement(
+								'tbody',
+								null,
+								this.props.departures.map(function (x) {
+									return _react2.default.createElement(Departure, { departure: x });
+								})
+							)
 						)
-					)
-				);
+					);
+				} else {
+					if (this.props.error !== '') {
+						return _react2.default.createElement(
+							'div',
+							null,
+							_react2.default.createElement(
+								'h2',
+								null,
+								this.props.station.name
+							),
+							_react2.default.createElement(
+								'p',
+								null,
+								'Error: ',
+								this.props.error
+							)
+						);
+					} else {
+						return _react2.default.createElement(
+							'div',
+							null,
+							_react2.default.createElement(
+								'h2',
+								null,
+								this.props.station.name
+							),
+							_react2.default.createElement(
+								'p',
+								null,
+								'Currently no departures'
+							)
+						);
+					}
+				}
 			}
 		}]);
 
