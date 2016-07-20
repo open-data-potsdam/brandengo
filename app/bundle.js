@@ -9128,6 +9128,9 @@
 					_this2.stations = stationsWithoutDepartures;
 					var initialStations = stationsWithoutDepartures.slice(0, initialNStations);
 					Promise.all(initialStations.map(_this2.getDepartures.bind(_this2))).then(function (stations) {
+						stations.sort(function (a, b) {
+							return a.when > b.when;
+						});
 						_this2.stationsWithInfo = stations;
 						_this2.setState({ currentFocus: 0 });
 					}).catch(function (err) {

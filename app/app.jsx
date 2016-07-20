@@ -33,6 +33,7 @@ class StationBox extends React.Component {
 				const initialStations = stationsWithoutDepartures.slice(0, initialNStations);
 				Promise.all(initialStations.map(this.getDepartures.bind(this)))
 					.then(stations => {
+						stations.sort((a, b) => a.when > b.when)
 						this.stationsWithInfo = stations;
 						this.setState({ currentFocus: 0 });
 					})
