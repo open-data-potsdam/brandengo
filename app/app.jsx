@@ -35,9 +35,9 @@ class StationBox extends React.Component {
 					.then(stations => {
 						this.stationsWithInfo = stations;
 						this.setState({ currentFocus: 0 });
-					});
+					})
+					.catch(err => console.log(err));
 			})
-			.catch(err => console.log(err));
 	}
 
 	getDepartures(station) {
@@ -46,7 +46,8 @@ class StationBox extends React.Component {
 
 		return new Promise((resolve, reject) => {
 			fetch(urlWithId)
-				.then(r => r.ok ? r.json() : reject(r))
+				// .then(r => r.ok ? r.json() : reject(r))
+				.then(r => r.ok ? r.json() : resolve({ station: station, departures: [] }))
 				.then(function(departures) { resolve({ station: station, departures: departures }) })
 		})
 	}

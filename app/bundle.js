@@ -9130,9 +9130,9 @@
 					Promise.all(initialStations.map(_this2.getDepartures.bind(_this2))).then(function (stations) {
 						_this2.stationsWithInfo = stations;
 						_this2.setState({ currentFocus: 0 });
+					}).catch(function (err) {
+						return console.log(err);
 					});
-				}).catch(function (err) {
-					return console.log(err);
 				});
 			}
 		}, {
@@ -9141,8 +9141,10 @@
 				var urlWithId = baseUrl + '/stations/' + station.id + '/departures\n\t\t\t?duration=' + this.state.maxMinutesToDeparture;
 
 				return new Promise(function (resolve, reject) {
-					fetch(urlWithId).then(function (r) {
-						return r.ok ? r.json() : reject(r);
+					fetch(urlWithId)
+					// .then(r => r.ok ? r.json() : reject(r))
+					.then(function (r) {
+						return r.ok ? r.json() : resolve({ station: station, departures: [] });
 					}).then(function (departures) {
 						resolve({ station: station, departures: departures });
 					});
