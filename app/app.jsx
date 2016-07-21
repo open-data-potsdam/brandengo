@@ -80,7 +80,7 @@ class StationBox extends React.Component {
 				<Station key={currentStation.station.name} departures={currentStation.departures} station={currentStation.station} error={currentStation.error}/>
 			</ReactCSSTransitionGroup>
 		}
-		return null;
+		return <div>Loading data from server...</div>;
 	}
 }
 
@@ -88,7 +88,8 @@ class Station extends React.Component {
 
 	render() {
 		if (this.props.departures.length) {
-			return <div>
+			return <div className="station">
+					<img src={`img/stations/${this.props.station.id}.jpg`} alt="Station Picture"/>
 					<h2>{this.props.station.name}</h2>
 					<table>
 						<thead>

@@ -24,8 +24,13 @@ tr:nth-child(even), th {
 	background: white;
 }
 
-img {
-	height: 3em;
+#logo {
+	height: 1em;
+}
+
+.station img {
+	border-radius: 50%;
+	height: 10em;
 }
 
 h1, h2 {

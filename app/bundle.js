@@ -9184,7 +9184,11 @@
 						_react2.default.createElement(Station, { key: currentStation.station.name, departures: currentStation.departures, station: currentStation.station, error: currentStation.error })
 					);
 				}
-				return null;
+				return _react2.default.createElement(
+					'div',
+					null,
+					'Loading data from server...'
+				);
 			}
 		}]);
 
@@ -9206,7 +9210,8 @@
 				if (this.props.departures.length) {
 					return _react2.default.createElement(
 						'div',
-						null,
+						{ className: 'station' },
+						_react2.default.createElement('img', { src: 'img/stations/' + this.props.station.id + '.jpg', alt: 'Station Picture' }),
 						_react2.default.createElement(
 							'h2',
 							null,
