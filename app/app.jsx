@@ -148,6 +148,16 @@ class Departure extends React.Component {
 		</tr>;
 	}
 }
+// based on: http://erlycoder.com/49/javascript-hash-functions-to-convert-string-into-integer-hash-
+// djb2 implemention
+
+function hash(x){
+    let hash = 5381;
+    for (i = 0; i < x.length; i++) {
+      hash = ((hash << 5) + hash) + x[i]; /* hash * 33 + c */
+    }
+    return hash;
+}
 
 $(function() {
   if (navigator.geolocation) {
@@ -159,5 +169,11 @@ $(function() {
   } else {
     $(body).innerHTML = "Geolocation is not supported by this browser.";
   }
+
+  $(".backup_picture").error(=> {
+  			const hashValues = $(this).attr()
+  			$(this).attr('src', './images/nopicture.png');
+      });
+  });
 });
 

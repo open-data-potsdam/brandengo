@@ -38,6 +38,10 @@ h1, h2 {
 	font-weight: 300;
 }
 
+h1 {
+	font-size: 1em;
+}
+
 .example-enter {
   opacity: 0.01;
 }
