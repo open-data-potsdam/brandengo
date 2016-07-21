@@ -1,6 +1,7 @@
 body {
 	text-align: center;
 	font-family: 'Open Sans', sans-serif !important;
+	background-color: #f9f9f9;
 }
 
 table {
@@ -8,14 +9,19 @@ table {
 	margin: 0 auto;
 	width: 100%;
 	max-width: 600px;
+	border-collapse: collapse;
+}
+
+th:nth-child(3), td:nth-child(3) {
+	text-align: right;
 }
 
 th, td {
 	padding: 0.75em;
 }
 
-tr:nth-child(even), thead tr{
-	background: #f9f9f9
+tr:nth-child(even), th {
+	background: white;
 }
 
 img {

@@ -9129,9 +9129,6 @@
 					_this2.stations = stationsWithoutDepartures;
 					var initialStations = stationsWithoutDepartures.slice(0, initialNStations);
 					Promise.all(initialStations.map(_this2.getDepartures.bind(_this2))).then(function (stations) {
-						stations.sort(function (a, b) {
-							return a.when > b.when;
-						});
 						_this2.stationsWithInfo = stations;
 						_this2.setState({ currentFocus: 0 });
 					}).catch(function (err) {
@@ -9145,11 +9142,12 @@
 				var urlWithId = baseUrl + '/stations/' + station.id + '/departures\n\t\t\t?duration=' + this.state.maxMinutesToDeparture;
 
 				return new Promise(function (resolve, reject) {
-					fetch(urlWithId)
-					// .then(r => r.ok ? r.json() : reject(r))
-					.then(function (r) {
+					fetch(urlWithId).then(function (r) {
 						return r.ok ? r.json() : resolve({ station: station, departures: [], error: 'with get Departure' });
 					}).then(function (departures) {
+						departures = departures.sort(function (a, b) {
+							return a.when - b.when;
+						});
 						resolve({ station: station, departures: departures, error: '' });
 					});
 				});
@@ -9305,8 +9303,15 @@
 				var time = new Date(departure.when * 1000);
 				var timeDif = time.getTime() - new Date().getTime();
 				var minutes = Math.floor(timeDif / (1000 * 60));
-				var minutesString = minutes + ' min';
-				if (minutes < 1) minutesString = 'now';
+				var timeString = minutes + ' min';
+				if (minutes < 1) timeString = 'now';
+				if (minutes > 30) {
+					var hours = new String(time.getHours());
+					var _minutes = new String(time.getMinutes());
+					hours = hours.length > 1 ? hours : '0' + hours;
+					_minutes = _minutes.length > 1 ? _minutes : '0' + _minutes;
+					timeString = hours + ':' + _minutes;
+				}
 
 				// const minutes = timeDif.getMinutes() + timeDif.getHours() * 60 + ' min';
 				var direction = departure.direction;
@@ -9317,7 +9322,7 @@
 				return _react2.default.createElement(
 					'tr',
 					null,
-					[lineString, direction, minutesString].map(function (x) {
+					[lineString, direction, timeString].map(function (x) {
 						return _react2.default.createElement(
 							'td',
 							{ key: x },

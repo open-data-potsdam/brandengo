@@ -34,7 +34,6 @@ class StationBox extends React.Component {
 				const initialStations = stationsWithoutDepartures.slice(0, initialNStations);
 				Promise.all(initialStations.map(this.getDepartures.bind(this)))
 					.then(stations => {
-						stations.sort((a, b) => a.when > b.when)
 						this.stationsWithInfo = stations;
 						this.setState({ currentFocus: 0 });
 					})
@@ -48,9 +47,11 @@ class StationBox extends React.Component {
 
 		return new Promise((resolve, reject) => {
 			fetch(urlWithId)
-				// .then(r => r.ok ? r.json() : reject(r))
 				.then(r => r.ok ? r.json() : resolve({ station: station, departures: [], error: 'with get Departure' }))
-				.then(function(departures) { resolve({ station: station, departures: departures, error: '' }) })
+				.then(function(departures) {
+					departures = departures.sort((a, b) => a.when - b.when);
+					resolve({ station: station, departures: departures, error: '' });
+				})
 		})
 	}
 
@@ -125,8 +126,15 @@ class Departure extends React.Component {
 		const time = new Date(departure.when * 1000);
 		const timeDif = time.getTime() - new Date().getTime();
 		const minutes = Math.floor(timeDif / (1000 * 60));
-		let minutesString = `${minutes} min`;
-		if (minutes < 1) minutesString = 'now'
+		let timeString = `${minutes} min`;
+		if (minutes < 1) timeString = 'now'
+		if (minutes > 30) {
+			let hours = new String(time.getHours());
+			let minutes = new String(time.getMinutes());
+			hours = hours.length > 1 ? hours : `0${hours}`;
+			minutes = minutes.length > 1 ? minutes : `0${minutes}`;
+			timeString = `${hours}:${minutes}`;
+		}
 
 		// const minutes = timeDif.getMinutes() + timeDif.getHours() * 60 + ' min';
 		const direction = departure.direction;
@@ -135,7 +143,7 @@ class Departure extends React.Component {
 		const lineString = `${type} ${line}`;
 
 		return <tr>
-			{[lineString, direction, minutesString].map(x => <td key={x}>{x}</td>)}
+			{[lineString, direction, timeString].map(x => <td key={x}>{x}</td>)}
 		</tr>;
 	}
 }
