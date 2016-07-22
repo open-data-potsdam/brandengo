@@ -16,6 +16,7 @@ class StationBox extends React.Component {
 			currentFocus: null,
 			latitude: null,
 			longitude: null,
+			loadingMessage: null
 		};
 		this.hammerjsElement = new Hammer(document);
 		this.stations = [];
@@ -46,7 +47,7 @@ class StationBox extends React.Component {
 		function successfullyLocated(location) {
 			const latitude = location.coords.latitude;
 			const longitude = location.coords.longitude;
-			this.setState({ latitude: latitude, longitude: longitude });
+			this.setState({ latitude: latitude, longitude: longitude, loadingMessage: 'Fetching Departures from Server'});
 			this.fetchStations();
 		}
 
@@ -55,6 +56,7 @@ class StationBox extends React.Component {
 		}
 
 		if (navigator.geolocation) {
+			this.setState({ loadingMessage: 'Getting Geolocation' });
     	navigator.geolocation.getCurrentPosition(successfullyLocated.bind(this), failedLocated);
  		} else {
     	alert('Geolocation is not supported by this browser');
@@ -100,10 +102,13 @@ class StationBox extends React.Component {
 			</ReactCSSTransitionGroup>
 		}
 
-		return <div>
-				Loading data from server...
-				<div className="loader"></div>
-			</div>;
+		if (typeof(this.state) !== 'undefined') {
+			return <div>
+					{this.state.loadingMessage}
+					<div className="loader"></div>
+				</div>;		
+		}
+		return null;
 	}
 }
 

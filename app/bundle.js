@@ -9106,7 +9106,8 @@
 				maxMinutesToDeparture: 120,
 				currentFocus: null,
 				latitude: null,
-				longitude: null
+				longitude: null,
+				loadingMessage: null
 			};
 			_this.hammerjsElement = new Hammer(document);
 			_this.stations = [];
@@ -9144,7 +9145,7 @@
 				function successfullyLocated(location) {
 					var latitude = location.coords.latitude;
 					var longitude = location.coords.longitude;
-					this.setState({ latitude: latitude, longitude: longitude });
+					this.setState({ latitude: latitude, longitude: longitude, loadingMessage: 'Fetching Departures from Server' });
 					this.fetchStations();
 				}
 
@@ -9153,6 +9154,7 @@
 				}
 
 				if (navigator.geolocation) {
+					this.setState({ loadingMessage: 'Getting Geolocation' });
 					navigator.geolocation.getCurrentPosition(successfullyLocated.bind(this), failedLocated);
 				} else {
 					alert('Geolocation is not supported by this browser');
@@ -9206,12 +9208,15 @@
 					);
 				}
 
-				return _react2.default.createElement(
-					'div',
-					null,
-					'Loading data from server...',
-					_react2.default.createElement('div', { className: 'loader' })
-				);
+				if (typeof this.state !== 'undefined') {
+					return _react2.default.createElement(
+						'div',
+						null,
+						this.state.loadingMessage,
+						_react2.default.createElement('div', { className: 'loader' })
+					);
+				}
+				return null;
 			}
 		}]);
 
