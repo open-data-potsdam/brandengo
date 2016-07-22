@@ -9105,39 +9105,82 @@
 			_this.state = {
 				maxMinutesToDeparture: 120,
 				currentFocus: null,
-				latitude: props.latitude,
-				longitude: props.longitude
+				latitude: null,
+				longitude: null
 			};
 			_this.hammerjsElement = new Hammer(document);
 			_this.stations = [];
 			_this.stationsWithInfo = [];
-			_this.fetchStations();
 			return _this;
 		}
 
 		_createClass(StationBox, [{
+			key: 'componentDidMount',
+			value: function componentDidMount() {
+				var _this2 = this;
+
+				this.getLocation.bind(this).call();
+				this.interval = setInterval(this.getLocation.bind(this), 1000 * 60 * 5);
+
+				// subscribe to events
+				this.hammerjsElement.on('swipeleft', function (e) {
+					e.preventDefault();
+					var n = _this2.stationsWithInfo.length; // number of avaible station+infos
+					_this2.fetchDepartures(_this2.stations[n]).then(function (newStationInfo) {
+						return _this2.stationsWithInfo.push(newStationInfo);
+					});
+					_this2.setState({ currentFocus: _this2.state.currentFocus + 1 });
+				});
+
+				this.hammerjsElement.on('swiperight', function (e) {
+					e.preventDefault();
+					var newfocus = Math.max(0, _this2.state.currentFocus - 1);
+					_this2.setState({ currentFocus: newfocus });
+				});
+			}
+		}, {
+			key: 'getLocation',
+			value: function getLocation() {
+				function successfullyLocated(location) {
+					var latitude = location.coords.latitude;
+					var longitude = location.coords.longitude;
+					this.setState({ latitude: latitude, longitude: longitude });
+					this.fetchStations();
+				}
+
+				function failedLocated(error) {
+					console.log('failed location');
+				}
+
+				if (navigator.geolocation) {
+					navigator.geolocation.getCurrentPosition(successfullyLocated.bind(this), failedLocated);
+				} else {
+					alert('Geolocation is not supported by this browser');
+				}
+			}
+		}, {
 			key: 'fetchStations',
 			value: function fetchStations() {
-				var _this2 = this;
+				var _this3 = this;
 
 				var urlWithLocation = baseUrl + '/stations/nearby?latitude=' + this.state.latitude + '&longitude=' + this.state.longitude + '&results=' + maxNStations;
 
 				fetch(urlWithLocation).then(function (r) {
 					return r.ok ? r.json() : Promise.reject(r);
 				}).then(function (stationsWithoutDepartures) {
-					_this2.stations = stationsWithoutDepartures;
+					_this3.stations = stationsWithoutDepartures;
 					var initialStations = stationsWithoutDepartures.slice(0, initialNStations);
-					Promise.all(initialStations.map(_this2.getDepartures.bind(_this2))).then(function (stations) {
-						_this2.stationsWithInfo = stations;
-						_this2.setState({ currentFocus: 0 });
+					Promise.all(initialStations.map(_this3.fetchDepartures.bind(_this3))).then(function (stations) {
+						_this3.stationsWithInfo = stations;
+						_this3.setState({ currentFocus: 0 });
 					}).catch(function (err) {
 						return console.log(err);
 					});
 				});
 			}
 		}, {
-			key: 'getDepartures',
-			value: function getDepartures(station) {
+			key: 'fetchDepartures',
+			value: function fetchDepartures(station) {
 				var urlWithId = baseUrl + '/stations/' + station.id + '/departures\n\t\t\t?duration=' + this.state.maxMinutesToDeparture;
 
 				return new Promise(function (resolve, reject) {
@@ -9152,27 +9195,6 @@
 				});
 			}
 		}, {
-			key: 'componentDidMount',
-			value: function componentDidMount() {
-				var _this3 = this;
-
-				// subscribe to events
-				this.hammerjsElement.on('swipeleft', function (e) {
-					e.preventDefault();
-					var n = _this3.stationsWithInfo.length; // number of avaible station+infos
-					_this3.getDepartures(_this3.stations[n]).then(function (newStationInfo) {
-						return _this3.stationsWithInfo.push(newStationInfo);
-					});
-					_this3.setState({ currentFocus: _this3.state.currentFocus + 1 });
-				});
-
-				this.hammerjsElement.on('swiperight', function (e) {
-					e.preventDefault();
-					var newfocus = Math.max(0, _this3.state.currentFocus - 1);
-					_this3.setState({ currentFocus: newfocus });
-				});
-			}
-		}, {
 			key: 'render',
 			value: function render() {
 				if (this.stationsWithInfo.length > 0) {
@@ -9183,6 +9205,7 @@
 						_react2.default.createElement(Station, { key: currentStation.station.name, departures: currentStation.departures, station: currentStation.station, error: currentStation.error })
 					);
 				}
+
 				return _react2.default.createElement(
 					'div',
 					null,
@@ -9362,23 +9385,8 @@
 		return x % 89;
 	}
 
-	function successfullyLocated(location) {
-		var latitude = location.coords.latitude;
-		var longitude = location.coords.longitude;
-		_reactDom2.default.render(_react2.default.createElement(StationBox, { longitude: longitude, latitude: latitude }), document.getElementById('stationBox'));
-	}
-
-	function failedLocated(error) {
-		console.log('failed location');
-		$("#stationBox").html("NO");
-	}
-
 	$(function () {
-		if (navigator.geolocation) {
-			navigator.geolocation.getCurrentPosition(successfullyLocated, failedLocated);
-		} else {
-			$(body).innerHTML = "Geolocation is not supported by this browser.";
-		}
+		_reactDom2.default.render(_react2.default.createElement(StationBox, null), document.getElementById('stationBox'));
 	});
 
 /***/ },

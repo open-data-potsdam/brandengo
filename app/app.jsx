@@ -14,13 +14,51 @@ class StationBox extends React.Component {
 		this.state = {
 			maxMinutesToDeparture: 120,
 			currentFocus: null,
-			latitude: props.latitude,
-			longitude: props.longitude,
+			latitude: null,
+			longitude: null,
 		};
 		this.hammerjsElement = new Hammer(document);
 		this.stations = [];
 		this.stationsWithInfo = [];
-		this.fetchStations();
+	}
+
+	componentDidMount() {
+		this.getLocation.bind(this).call();
+		this.interval = setInterval(this.getLocation.bind(this), 1000 * 60 * 5);
+
+		// subscribe to events
+		this.hammerjsElement.on('swipeleft', (e) => {
+			e.preventDefault();
+			const n = this.stationsWithInfo.length; // number of avaible station+infos
+			this.fetchDepartures(this.stations[n])
+				.then(newStationInfo => this.stationsWithInfo.push(newStationInfo));
+			this.setState({ currentFocus: this.state.currentFocus + 1 });
+		});
+
+		this.hammerjsElement.on('swiperight', (e) => {
+			e.preventDefault();
+			const newfocus = Math.max(0, this.state.currentFocus - 1);
+			this.setState({ currentFocus: newfocus });
+		});    
+	}
+
+	getLocation() {
+		function successfullyLocated(location) {
+			const latitude = location.coords.latitude;
+			const longitude = location.coords.longitude;
+			this.setState({ latitude: latitude, longitude: longitude });
+			this.fetchStations();
+		}
+
+		function failedLocated(error) {
+			console.log('failed location');
+		}
+
+		if (navigator.geolocation) {
+    	navigator.geolocation.getCurrentPosition(successfullyLocated.bind(this), failedLocated);
+ 		} else {
+    	alert('Geolocation is not supported by this browser');
+  	}
 	}
 
 	fetchStations() {
@@ -31,7 +69,7 @@ class StationBox extends React.Component {
 			.then(stationsWithoutDepartures => {
 				this.stations = stationsWithoutDepartures;
 				const initialStations = stationsWithoutDepartures.slice(0, initialNStations);
-				Promise.all(initialStations.map(this.getDepartures.bind(this)))
+				Promise.all(initialStations.map(this.fetchDepartures.bind(this)))
 					.then(stations => {
 						this.stationsWithInfo = stations;
 						this.setState({ currentFocus: 0 });
@@ -40,7 +78,7 @@ class StationBox extends React.Component {
 			})
 	}
 
-	getDepartures(station) {
+	fetchDepartures(station) {
 		const urlWithId = `${baseUrl}/stations/${station.id}/departures
 			?duration=${this.state.maxMinutesToDeparture}`;
 
@@ -54,24 +92,6 @@ class StationBox extends React.Component {
 		})
 	}
 
-	componentDidMount() {
-		// subscribe to events
-		this.hammerjsElement.on('swipeleft', (e) => {
-			e.preventDefault();
-			const n = this.stationsWithInfo.length; // number of avaible station+infos
-			this.getDepartures(this.stations[n])
-				.then(newStationInfo => this.stationsWithInfo.push(newStationInfo));
-			this.setState({ currentFocus: this.state.currentFocus + 1 });
-		});
-
-		this.hammerjsElement.on('swiperight', (e) => {
-			e.preventDefault();
-			const newfocus = Math.max(0, this.state.currentFocus - 1);
-			this.setState({ currentFocus: newfocus });
-		});    
-	}
-
-
 	render() {
 		if(this.stationsWithInfo.length > 0) {
 			const currentStation = this.stationsWithInfo[this.state.currentFocus];
@@ -79,6 +99,7 @@ class StationBox extends React.Component {
 				<Station key={currentStation.station.name} departures={currentStation.departures} station={currentStation.station} error={currentStation.error}/>
 			</ReactCSSTransitionGroup>
 		}
+
 		return <div>
 				Loading data from server...
 				<div className="loader"></div>
@@ -155,7 +176,7 @@ class Departure extends React.Component {
 		const line = departure.product.line;
 		const type = departure.product.type.unicode;
 		const lineString = `${type} ${line}`;
-		
+
 		return <tr>
 			<td key="line">{lineString}</td>
 			<td key="direction" dangerouslySetInnerHTML={{__html: direction }}></td>
@@ -166,25 +187,11 @@ class Departure extends React.Component {
 
 // number of default pictures
 function hash(x){
-    return x % 89;
+  return x % 89;
 }
 
-function successfullyLocated(location) {
-	const latitude = location.coords.latitude;
-	const longitude = location.coords.longitude;
-	ReactDOM.render(<StationBox longitude={longitude} latitude={latitude}/>, document.getElementById('stationBox'));
-}
-
-function failedLocated(error) {
-	console.log('failed location');
-	$("#stationBox").html("NO");
-}
 
 $(function() {
-  if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(successfullyLocated, failedLocated);
-  } else {
-    $(body).innerHTML = "Geolocation is not supported by this browser.";
-  }
+	ReactDOM.render(<StationBox/>, document.getElementById('stationBox'));
 });
 
