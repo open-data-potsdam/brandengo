@@ -9204,12 +9204,16 @@
 		}, {
 			key: 'render',
 			value: function render() {
+				var _this4 = this;
+
 				if (this.stationsWithInfo.length > 0) {
 					var currentStation = this.stationsWithInfo[this.state.currentFocus];
 					return _react2.default.createElement(
 						_reactAddonsCssTransitionGroup2.default,
 						{ transitionName: 'example', transitionEnterTimeout: 500, transitionLeaveTimeout: 1 },
-						_react2.default.createElement(Station, { key: currentStation.station.name, departures: currentStation.departures, station: currentStation.station, error: currentStation.error })
+						_react2.default.createElement(Station, { ref: function ref(c) {
+								return _this4.stationDiv = c;
+							}, key: currentStation.station.name, departures: currentStation.departures, station: currentStation.station, error: currentStation.error })
 					);
 				}
 

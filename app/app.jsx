@@ -102,7 +102,7 @@ class StationBox extends React.Component {
 		if(this.stationsWithInfo.length > 0) {
 			const currentStation = this.stationsWithInfo[this.state.currentFocus];
 			return <ReactCSSTransitionGroup transitionName="example" transitionEnterTimeout={500} transitionLeaveTimeout={1}>
-				<Station key={currentStation.station.name} departures={currentStation.departures} station={currentStation.station} error={currentStation.error}/>
+				<Station ref={(c) => this.stationDiv = c} key={currentStation.station.name} departures={currentStation.departures} station={currentStation.station} error={currentStation.error}/>
 			</ReactCSSTransitionGroup>
 		}
 
