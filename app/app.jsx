@@ -43,11 +43,15 @@ class StationBox extends React.Component {
 		});    
 	}
 
+	componentDidUpdate() {
+	  ReactDOM.findDOMNode(this).scrollIntoView();
+	}
+
 	getLocation() {
 		function successfullyLocated(location) {
 			const latitude = location.coords.latitude;
 			const longitude = location.coords.longitude;
-			this.setState({ latitude: latitude, longitude: longitude, loadingMessage: 'Fetching Departures from Server'});
+			this.setState({ latitude: latitude, longitude: longitude, loadingMessage: 'Fetching Departures'});
 			this.fetchStations();
 		}
 
@@ -104,8 +108,8 @@ class StationBox extends React.Component {
 
 		if (typeof(this.state) !== 'undefined') {
 			return <div>
-					{this.state.loadingMessage}
 					<div className="loader"></div>
+					<h2>{this.state.loadingMessage}</h2>
 				</div>;		
 		}
 		return null;

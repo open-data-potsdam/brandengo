@@ -9140,12 +9140,17 @@
 				});
 			}
 		}, {
+			key: 'componentDidUpdate',
+			value: function componentDidUpdate() {
+				_reactDom2.default.findDOMNode(this).scrollIntoView();
+			}
+		}, {
 			key: 'getLocation',
 			value: function getLocation() {
 				function successfullyLocated(location) {
 					var latitude = location.coords.latitude;
 					var longitude = location.coords.longitude;
-					this.setState({ latitude: latitude, longitude: longitude, loadingMessage: 'Fetching Departures from Server' });
+					this.setState({ latitude: latitude, longitude: longitude, loadingMessage: 'Fetching Departures' });
 					this.fetchStations();
 				}
 
@@ -9212,8 +9217,12 @@
 					return _react2.default.createElement(
 						'div',
 						null,
-						this.state.loadingMessage,
-						_react2.default.createElement('div', { className: 'loader' })
+						_react2.default.createElement('div', { className: 'loader' }),
+						_react2.default.createElement(
+							'h2',
+							null,
+							this.state.loadingMessage
+						)
 					);
 				}
 				return null;
