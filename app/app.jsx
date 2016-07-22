@@ -4,7 +4,7 @@ import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 
 
 const baseUrl = 'https://transport.rest';
-const maxNStations = 50;
+const maxNStations = 50; // FIXME: Looks like the cap is at 35
 const initialNStations = 2;
 
 
@@ -17,7 +17,6 @@ class StationBox extends React.Component {
 			latitude: props.latitude,
 			longitude: props.longitude,
 		};
-		// this.hammerjsElement = new Hammer(document.getElementById('stationBox'));
 		this.hammerjsElement = new Hammer(document);
 		this.stations = [];
 		this.stationsWithInfo = [];
@@ -80,16 +79,28 @@ class StationBox extends React.Component {
 				<Station key={currentStation.station.name} departures={currentStation.departures} station={currentStation.station} error={currentStation.error}/>
 			</ReactCSSTransitionGroup>
 		}
-		return <div>Loading data from server...</div>;
+		return <div>
+				Loading data from server...
+				<div className="loader"></div>
+			</div>;
 	}
 }
+
+function replaceWithDefault(event) {
+	const oldSrc = event.target.src;
+	const stationId = oldSrc.match(/\d+.jpg$/)[0].split('.')[0];
+	const hashed = hash(stationId);
+	const newSrc = `img/default/cropped/${hashed}.jpg`;
+	event.target.src = newSrc;
+}
+
 
 class Station extends React.Component {
 
 	render() {
 		if (this.props.departures.length) {
 			return <div className="station">
-					<img src={`img/stations/${this.props.station.id}.jpg`} alt="Station Picture"/>
+					<img onError={replaceWithDefault.bind(this)} src={`img/stations/${this.props.station.id}.jpg`} alt="Station Picture"/>
 					<h2>{this.props.station.name}</h2>
 					<table>
 						<thead>
@@ -137,43 +148,43 @@ class Departure extends React.Component {
 			timeString = `${hours}:${minutes}`;
 		}
 
-		// const minutes = timeDif.getMinutes() + timeDif.getHours() * 60 + ' min';
-		const direction = departure.direction;
+		// somtimes, you have to break the line to prevent the table from fucking up.
+		// because we have genereted dynamicly html, we have to set the html
+		// in a dangarous way. (see further below)
+		const direction = departure.direction.replace('/','/<wbr>');
 		const line = departure.product.line;
 		const type = departure.product.type.unicode;
 		const lineString = `${type} ${line}`;
-
+		
 		return <tr>
-			{[lineString, direction, timeString].map(x => <td key={x}>{x}</td>)}
+			<td key="line">{lineString}</td>
+			<td key="direction" dangerouslySetInnerHTML={{__html: direction }}></td>
+			<td key="time">{timeString}</td>
 		</tr>;
 	}
 }
-// based on: http://erlycoder.com/49/javascript-hash-functions-to-convert-string-into-integer-hash-
-// djb2 implemention
 
+// number of default pictures
 function hash(x){
-    let hash = 5381;
-    for (i = 0; i < x.length; i++) {
-      hash = ((hash << 5) + hash) + x[i]; /* hash * 33 + c */
-    }
-    return hash;
+    return x % 89;
+}
+
+function successfullyLocated(location) {
+	const latitude = location.coords.latitude;
+	const longitude = location.coords.longitude;
+	ReactDOM.render(<StationBox longitude={longitude} latitude={latitude}/>, document.getElementById('stationBox'));
+}
+
+function failedLocated(error) {
+	console.log('failed location');
+	$("#stationBox").html("NO");
 }
 
 $(function() {
   if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(location => {
-    	const latitude = location.coords.latitude;
-    	const longitude = location.coords.longitude;
-    	ReactDOM.render(<StationBox longitude={longitude} latitude={latitude}/>, document.getElementById('stationBox'));
-    });
+    navigator.geolocation.getCurrentPosition(successfullyLocated, failedLocated);
   } else {
     $(body).innerHTML = "Geolocation is not supported by this browser.";
   }
-
-  $(".backup_picture").error(=> {
-  			const hashValues = $(this).attr()
-  			$(this).attr('src', './images/nopicture.png');
-      });
-  });
 });
 
