@@ -1,25 +1,35 @@
 {
-  "name": "brandengo",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "name": "brunch-app",
+  "description": "Brunch.io application",
+  "private": true,
+  "author": "Brunch",
+  "version": "0.0.1",
+  "repository": "",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "author": "",
-  "license": "ISC",
-  "devDependencies": {
-    "babel-core": "^6.10.4",
-    "babel-loader": "^6.2.4",
-    "babel-preset-es2015": "^6.9.0",
-    "babel-preset-react": "^6.11.1",
-    "webpack": "^1.13.1"
+    "start": "LOGGY_STACKS=true brunch watch --server",
+    "build": "brunch build --production"
   },
   "dependencies": {
-    "babel-polyfill": "^6.9.1",
-    "react": "^15.2.1",
-    "react-addons-css-transition-group": "^15.2.1",
-    "react-dom": "^15.2.1",
-    "whatwg-fetch": "^1.0.0"
+    "babel-preset-react": "^6.24.1",
+    "bootstrap": "^3",
+    "hammerjs": "^2.0.8",
+    "jquery": "^3",
+    "react": "^15.6.1",
+    "react-dom": "^15.6.1",
+    "react-transition-group": "^2.1.0"
+  },
+  "devDependencies": {
+    "auto-reload-brunch": "^2",
+    "babel-brunch": "^6",
+    "babel-preset-latest": "^6",
+    "babel-preset-stage-0": "^6",
+    "brunch": "^2",
+    "copycat-brunch": "^1.1.0",
+    "eslint": "^3",
+    "eslint-config-airbnb-base": "^11",
+    "eslint-plugin-import": "^2",
+    "pleeease-brunch": "^3",
+    "sass-brunch": "^2",
+    "uglify-js-brunch": "^2"
   }
 }

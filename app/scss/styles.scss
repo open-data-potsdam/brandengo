@@ -1,0 +1,103 @@
+body {
+  text-align: center;
+  font-family: 'Open Sans', sans-serif !important;
+  background-color: #f9f9f9;
+}
+
+table {
+  text-align: left;
+  margin: 0 auto;
+  width: 100%;
+  max-width: 600px;
+  border-collapse: collapse;
+}
+
+th:nth-child(3),
+td:nth-child(3) {
+  text-align: right;
+}
+
+th,
+td {
+  padding: 0.75em;
+}
+
+tr:nth-child(even),
+th {
+  background: white;
+}
+
+#logo {
+  height: 1em;
+}
+
+.station img {
+  border-radius: 50%;
+  height: 10em;
+}
+
+h1,
+h2 {
+  color: #1abc9c;
+  font-weight: 300;
+}
+
+h1 {
+  font-size: 1em;
+}
+
+.example-enter {
+  opacity: 0.01;
+}
+
+.example-enter.example-enter-active {
+  opacity: 1;
+  transition: opacity 500ms ease-in;
+}
+
+.loader {
+  border: 1em solid white; /* Light grey */
+  border-top: 1em solid #1abc9c; /* Blue */
+  border-radius: 50%;
+  width: 8em;
+  height: 8em;
+  animation: spin 2s linear infinite;
+  margin: 0 auto;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@font-face {
+  font-family: 'Open Sans';
+  font-weight: 300;
+  font-style: normal;
+  src: url('/fonts/Open-Sans-300/Open-Sans-300.eot');
+  src: url('/fonts/Open-Sans-300/Open-Sans-300.eot?#iefix')
+      format('embedded-opentype'),
+    local('Open Sans Light'), local('Open-Sans-300'),
+    url('/fonts/Open-Sans-300/Open-Sans-300.woff2') format('woff2'),
+    url('/fonts/Open-Sans-300/Open-Sans-300.woff') format('woff'),
+    url('/fonts/Open-Sans-300/Open-Sans-300.ttf') format('truetype'),
+    url('/fonts/Open-Sans-300/Open-Sans-300.svg#OpenSans') format('svg');
+}
+
+@font-face {
+  font-family: 'Open Sans';
+  font-weight: 600;
+  font-style: normal;
+  src: url('/fonts/Open-Sans-600/Open-Sans-600.eot');
+  src: url('/fonts/Open-Sans-600/Open-Sans-600.eot?#iefix')
+      format('embedded-opentype'),
+    local('Open Sans Semibold'), local('Open-Sans-600'),
+    url('/fonts/Open-Sans-600/Open-Sans-600.woff2') format('woff2'),
+    url('/fonts/Open-Sans-600/Open-Sans-600.woff') format('woff'),
+    url('/fonts/Open-Sans-600/Open-Sans-600.ttf') format('truetype'),
+    url('/fonts/Open-Sans-600/Open-Sans-600.svg#OpenSans') format('svg');
+}
