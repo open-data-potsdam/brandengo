@@ -1,19 +1,19 @@
 import React from 'react';
 
 import { replaceWithDefault } from './../util';
-import Departure from './Departure';
+import DepartureRow from './DepartureRow';
 
-export default class Station extends React.Component {
+export default class StationCard extends React.Component {
   render() {
     if (this.props.departures.length) {
       return (
-        <div className="station">
+        <div className="stationCard">
           <img
             onError={replaceWithDefault.bind(this)}
             src={`img/stations/${this.props.station.id}.jpg`}
             alt="Station Picture"
           />
-          <h2>{this.props.station.name}</h2>
+          <h2 className="stationName">{this.props.station.name}</h2>
           <table>
             <thead>
               <tr>
@@ -23,7 +23,7 @@ export default class Station extends React.Component {
               </tr>
             </thead>
             <tbody>
-              {this.props.departures.map(x => <Departure departure={x} />)}
+              {this.props.departures.map(x => <DepartureRow departure={x} />)}
             </tbody>
           </table>
         </div>

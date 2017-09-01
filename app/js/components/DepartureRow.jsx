@@ -1,10 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-export default class Departure extends React.Component {
+export default class DepartureRow extends React.Component {
   render() {
     const departure = this.props.departure;
-    console.log('departure', departure);
     const time = new Date(departure.when);
     const timeDif = time.getTime() - new Date().getTime();
     const minutes = Math.floor(timeDif / (1000 * 60));

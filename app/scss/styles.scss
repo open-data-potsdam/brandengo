@@ -1,7 +1,22 @@
+$normal-space: 2rem;
+
 body {
   text-align: center;
   font-family: 'Open Sans', sans-serif !important;
   background-color: #f9f9f9;
+}
+
+.brand {
+  font-size: 2rem;
+  margin: $normal-space 0;
+}
+
+#logo {
+  height: 5rem;
+}
+
+.stationName {
+  margin: $normal-space 0;
 }
 
 table {
@@ -27,11 +42,7 @@ th {
   background: white;
 }
 
-#logo {
-  height: 1em;
-}
-
-.station img {
+.stationCard img {
   border-radius: 50%;
   height: 10em;
 }
@@ -40,10 +51,6 @@ h1,
 h2 {
   color: #1abc9c;
   font-weight: 300;
-}
-
-h1 {
-  font-size: 1em;
 }
 
 .example-enter {

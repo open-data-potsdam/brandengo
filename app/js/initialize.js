@@ -1,10 +1,11 @@
-// import someFunction from './someFile';
+import React from 'react';
+import ReactDOM from 'react-dom';
 
-// document.addEventListener('DOMContentLoaded', () => {
-//   console.log('initialized');
-//   someFunction();
-// });
-//
-//
-//
-var person = require('./app.jsx');
+import StationContainer from './components/StationContainer';
+
+document.addEventListener('DOMContentLoaded', () => {
+  ReactDOM.render(
+    <StationContainer />,
+    document.getElementById('stationContainer')
+  );
+});

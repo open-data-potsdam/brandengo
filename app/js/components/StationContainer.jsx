@@ -2,18 +2,18 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import Hammer from 'hammerjs';
 
-import Station from './Station';
+import StationCard from './StationCard';
 import { buildRequestOptions } from './../util';
 
 const baseUrl = 'https://vbb.transport.rest';
 const maxNStations = 50; // FIXME: Looks like the cap is at 35
 const initialNStations = 2;
 
-export default class StationBox extends React.Component {
+export default class StationContainer extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      maxMinutesToDeparture: 120,
+      maxMinutesToDeparture: 30,
       currentFocus: null,
       latitude: null,
       longitude: null,
@@ -55,8 +55,8 @@ export default class StationBox extends React.Component {
       const latitude = location.coords.latitude;
       const longitude = location.coords.longitude;
       this.setState({
-        latitude: latitude,
-        longitude: longitude,
+        latitude,
+        longitude,
         loadingMessage: 'Fetching Departures',
       });
       this.fetchStations();
@@ -102,7 +102,6 @@ export default class StationBox extends React.Component {
     const urlWithId = `${baseUrl}/stations/${station.id}/departures?duration=${this
       .state.maxMinutesToDeparture}`;
 
-    console.log('urlWithId', urlWithId);
     return new Promise((resolve, reject) => {
       fetch(urlWithId, this.requestOptions)
         .then(
@@ -110,14 +109,14 @@ export default class StationBox extends React.Component {
             r.ok
               ? r.json()
               : resolve({
-                  station: station,
+                  station,
                   departures: [],
                   error: 'with get Departure',
                 })
         )
-        .then(function(departures) {
-          departures = departures.sort((a, b) => a.when - b.when);
-          resolve({ station: station, departures: departures, error: '' });
+        .then(departures => {
+          const departuresSorted = departures.sort((a, b) => a.when - b.when);
+          resolve({ station, departures: departuresSorted, error: '' });
         });
     });
   }
@@ -126,7 +125,7 @@ export default class StationBox extends React.Component {
     if (this.stationsWithInfo.length > 0) {
       const currentStation = this.stationsWithInfo[this.state.currentFocus];
       return (
-        <Station
+        <StationCard
           ref={c => (this.stationDiv = c)}
           key={currentStation.station.name}
           departures={currentStation.departures}
