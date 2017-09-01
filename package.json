@@ -1,10 +1,10 @@
 {
-  "name": "brunch-app",
-  "description": "Brunch.io application",
+  "name": "brandengo",
+  "description": "BrandenGo",
   "private": true,
-  "author": "Brunch",
-  "version": "0.0.1",
-  "repository": "",
+  "author": "Johannes Filter",
+  "version": "0.1.0",
+  "repository": "https://github.com/open-data-potsdam/brandengo",
   "scripts": {
     "start": "LOGGY_STACKS=true brunch watch --server",
     "build": "brunch build --production"
@@ -26,9 +26,12 @@
     "brunch": "^2",
     "copycat-brunch": "^1.1.0",
     "eslint": "^3",
-    "eslint-config-airbnb-base": "^11",
+    "eslint-config-airbnb": "^15.0.2",
     "eslint-plugin-import": "^2",
+    "eslint-plugin-jsx-a11y": "^5.1.1",
+    "eslint-plugin-react": "^7.1.0",
     "pleeease-brunch": "^3",
+    "prettier": "^1.6.1",
     "sass-brunch": "^2",
     "uglify-js-brunch": "^2"
   }
