@@ -1,6 +1,13 @@
 module.exports = {
-  extends: ['airbnb-base', 'prettier'],
-  plugins: ['import', 'prettier'],
+  extends: ['airbnb', 'prettier'],
+  plugins: ['react', 'import', 'prettier'],
+  parserOptions: {
+    ecmaVersion: 6,
+    ecmaFeatures: {
+      jsx: true,
+    },
+    sourceType: 'module',
+  },
   env: {
     jquery: true,
     browser: true,
