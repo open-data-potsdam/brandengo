@@ -7,13 +7,13 @@ export default class StationCard extends React.Component {
   render() {
     if (this.props.departures.length) {
       return (
-        <div className="stationCard">
+        <div className="station-card">
           <img
             onError={replaceWithDefault.bind(this)}
             src={`img/stations/${this.props.station.id}.jpg`}
             alt="Station Picture"
           />
-          <h2 className="stationName">{this.props.station.name}</h2>
+          <h2 className="station-name">{this.props.station.name}</h2>
           <table>
             <thead>
               <tr>
