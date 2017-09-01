@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import Hammer from 'hammerjs';
 
 import Station from './Station';
+import { buildRequestOptions } from './../util';
 
 const baseUrl = 'https://vbb.transport.rest';
 const maxNStations = 50; // FIXME: Looks like the cap is at 35
@@ -21,6 +22,7 @@ export default class StationBox extends React.Component {
     this.hammerjsElement = new Hammer(document);
     this.stations = [];
     this.stationsWithInfo = [];
+    this.requestOptions = buildRequestOptions();
   }
 
   componentDidMount() {
@@ -79,7 +81,7 @@ export default class StationBox extends React.Component {
     const urlWithLocation = `${baseUrl}/stations/nearby?latitude=${this.state
       .latitude}&longitude=${this.state.longitude}&results=${maxNStations}`;
 
-    fetch(urlWithLocation)
+    fetch(urlWithLocation, this.requestOptions)
       .then(r => (r.ok ? r.json() : Promise.reject(r)))
       .then(stationsWithoutDepartures => {
         this.stations = stationsWithoutDepartures;
@@ -102,7 +104,7 @@ export default class StationBox extends React.Component {
 
     console.log('urlWithId', urlWithId);
     return new Promise((resolve, reject) => {
-      fetch(urlWithId)
+      fetch(urlWithId, this.requestOptions)
         .then(
           r =>
             r.ok
