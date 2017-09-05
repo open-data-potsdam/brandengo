@@ -1,48 +1,63 @@
-import React from 'react';
 import PropTypes from 'prop-types';
+import React from 'react';
 
 import { replaceWithDefault } from './../util';
 import DepartureRow from './DepartureRow';
+import Loading from './Loading';
 
-const StationCard = ({ errorMessage, station, departures }) => {
-  if (errorMessage) {
-    return (
-      <div>
-        <h2>{station.name}</h2>
-        <p>Error: {errorMessage}</p>
-      </div>
+const StationCard = ({ errorMessage, station, departures, isFetching }) => {
+  let departureTable;
+
+  if (departures && departures.length) {
+    departureTable = (
+      <table>
+        <thead>
+          <tr>
+            <th>Line</th>
+            <th>Destination</th>
+            <th>Departure</th>
+          </tr>
+        </thead>
+        <tbody>
+          {departures.map(x => (
+            <DepartureRow key={x.trip + x.when} departure={x} />
+          ))}
+        </tbody>
+      </table>
     );
   }
 
-  if (departures.length) {
-    return (
-      <div className="station-card">
-        <img
-          onError={replaceWithDefault.bind(this)}
-          src={`img/stations/${station.id}.jpg`}
-          alt="Station Picture"
-        />
-        <h2 className="station-name">{station.name}</h2>
-        <table>
-          <thead>
-            <tr>
-              <th>Line</th>
-              <th>Destination</th>
-              <th>Departure</th>
-            </tr>
-          </thead>
-          <tbody>{departures.map(x => <DepartureRow departure={x} />)}</tbody>
-        </table>
-      </div>
-    );
+  let error;
+  if (errorMessage) {
+    error = <p>Error: {errorMessage}</p>;
+  }
+
+  console.log('isFetching', isFetching);
+  let loader;
+  if (isFetching) {
+    loader = <Loading message={'is Fetching'} />;
   }
 
   return (
-    <div>
-      <h2>{station.name}</h2>
-      <p>Currently no departures</p>
+    <div className="station-card">
+      <img
+        onError={replaceWithDefault.bind(this)}
+        src={`img/stations/${station.id}.jpg`}
+        alt="Station"
+      />
+      <h2 className="station-name">{station.name}</h2>
+      {error}
+      {loader}
+      {departureTable}
     </div>
   );
+
+  // return (
+  //   <div>
+  //     <h2>{station.name}</h2>
+  //     <p>Currently no departures</p>
+  //   </div>
+  // );
 };
 
 StationCard.propTypes = {

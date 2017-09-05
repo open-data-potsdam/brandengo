@@ -26,7 +26,6 @@ export default class StationContainer extends React.Component {
       currentIndex: null,
       nStationsWithFetchedDepartes: 0,
       stations: [], // lazy loading
-      stationIds: [], // all possible stations
     };
     this.hammerjsElement = new Hammer(document);
     this.requestOptions = buildRequestOptions();
@@ -79,25 +78,36 @@ export default class StationContainer extends React.Component {
   }
 
   swipeLeft(event) {
-    console.log(this);
     event.preventDefault();
-    const {
-      currentIndex,
-      stations,
-      stationIds,
-      nStationsWithFetchedDepartes,
-    } = this.state;
+    const { currentIndex, stations, nStationsWithFetchedDepartes } = this.state;
 
-    if (currentIndex >= stationIds.length - 1) return; // abort when end reached
+    if (currentIndex >= stations.length - 1) return; // abort when end reached
 
     if (nStationsWithFetchedDepartes - currentIndex <= initialNStations) {
+      const newStationsFetchOne = [...stations];
+      newStationsFetchOne[nStationsWithFetchedDepartes] = {
+        ...stations[nStationsWithFetchedDepartes],
+        isFetching: true,
+      };
+
+      console.log(newStationsFetchOne[nStationsWithFetchedDepartes]);
+
+      this.setState({
+        stations: newStationsFetchOne,
+        currentIndex: currentIndex + 1,
+      });
+
       this.fetchDepartures(
-        stationIds[nStationsWithFetchedDepartes]
+        stations[nStationsWithFetchedDepartes].station
       ).then(newStation => {
+        const newStations = [...stations];
+        newStations[nStationsWithFetchedDepartes] = {
+          ...newStation,
+          isFetching: false,
+        };
         this.setState({
-          currentIndex: currentIndex + 1,
           nStationsWithFetchedDepartes: nStationsWithFetchedDepartes + 1,
-          stations: [...stations, newStation],
+          stations: newStations,
         });
       });
     } else {
@@ -125,19 +135,19 @@ export default class StationContainer extends React.Component {
 
     fetch(urlWithLocation, this.requestOptions)
       .then(r => (r.ok ? r.json() : Promise.reject(r)))
-      .then(stationsWithoutDepartures => {
-        const stationIds = stationsWithoutDepartures.map(x => x.id);
-        const initialStations = stationsWithoutDepartures.slice(
-          0,
-          initialNStations
-        );
+      .then(stations => {
+        const initialStations = stations.slice(0, initialNStations);
         Promise.all(initialStations.map(this.fetchDepartures.bind(this)))
-          .then(stations => {
+          .then(stationsWithDepartures => {
+            const otherStations = stations.slice(initialNStations).map(x => {
+              return { station: x, departures: null, errorMessage: null };
+            });
+            console.log('otherStations', otherStations);
+
             this.setState({
               currentIndex: 0,
               nStationsWithFetchedDepartes: initialNStations,
-              stations,
-              stationIds,
+              stations: [...stationsWithDepartures, ...otherStations],
               loadingMessage: null,
             });
           })
@@ -192,6 +202,7 @@ export default class StationContainer extends React.Component {
           departures={currentStation.departures}
           station={currentStation.station}
           errorMessage={currentStation.errorMessage}
+          isFetching={currentStation.isFetching}
         />
       );
     } else {
