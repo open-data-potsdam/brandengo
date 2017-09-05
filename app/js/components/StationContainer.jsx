@@ -1,9 +1,10 @@
+import Hammer from 'hammerjs';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import Hammer from 'hammerjs';
 
-import StationCard from './StationCard';
 import { buildRequestOptions } from './../util';
+import StationCard from './StationCard';
+import Loading from './Loading';
 
 const baseUrl = 'https://vbb.transport.rest';
 const maxNStations = 50; // FIXME: Looks like the cap is at 35
@@ -135,14 +136,14 @@ export default class StationContainer extends React.Component {
       );
     }
 
-    if (typeof this.state !== 'undefined') {
-      return (
-        <div>
-          <div className="loader" />
-          <h2>{this.state.loadingMessage}</h2>
-        </div>
-      );
+    if (this.state.loadingMessage) {
+      return <Loading message={this.state.loadingMessage} />;
     }
+
+    if (this.stationsWithInfo.length === 0) {
+      return <h2>Error</h2>;
+    }
+
     return null;
   }
 }
