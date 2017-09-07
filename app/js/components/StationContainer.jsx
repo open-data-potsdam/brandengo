@@ -59,7 +59,7 @@ export default class StationContainer extends React.Component {
     function failedLocated(error) {
       this.setState({
         loadingMessage: null,
-        errorMessage: `Something went wrong while getting your current GPS location: ${error}`,
+        errorMessage: `Something went wrong while getting your current GPS location: ${error.message}`,
       });
     }
 
