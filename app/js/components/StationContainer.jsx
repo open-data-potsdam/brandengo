@@ -7,8 +7,8 @@ import StationCard from './StationCard';
 import Loading from './Loading';
 
 const baseUrl = 'https://vbb.transport.rest';
-const maxNStations = 50; // FIXME: Looks like the cap is at 35
-const initialNStations = 2;
+const maxNumStations = 50; // FIXME: Looks like the cap is at 35
+const initialNumStations = 2;
 
 export default class StationContainer extends React.Component {
   constructor(props) {
@@ -83,38 +83,13 @@ export default class StationContainer extends React.Component {
 
     if (currentIndex >= stations.length - 1) return; // abort when end reached
 
-    if (nStationsWithFetchedDepartes - currentIndex <= initialNStations) {
-      const newStationsFetchOne = [...stations];
-      newStationsFetchOne[nStationsWithFetchedDepartes] = {
-        ...stations[nStationsWithFetchedDepartes],
-        isFetching: true,
-      };
-
-      console.log(newStationsFetchOne[nStationsWithFetchedDepartes]);
-
-      this.setState({
-        stations: newStationsFetchOne,
-        currentIndex: currentIndex + 1,
-      });
-
-      this.fetchDepartures(
-        stations[nStationsWithFetchedDepartes].station
-      ).then(newStation => {
-        const newStations = [...stations];
-        newStations[nStationsWithFetchedDepartes] = {
-          ...newStation,
-          isFetching: false,
-        };
-        this.setState({
-          nStationsWithFetchedDepartes: nStationsWithFetchedDepartes + 1,
-          stations: newStations,
-        });
-      });
-    } else {
-      this.setState({
-        currentIndex: currentIndex + 1,
-      });
+    if (nStationsWithFetchedDepartes - currentIndex <= initialNumStations) {
+      this.fetchDepartures(nStationsWithFetchedDepartes);
     }
+
+    this.setState({
+      currentIndex: currentIndex + 1,
+    });
   }
 
   swipeRight(event) {
@@ -131,56 +106,78 @@ export default class StationContainer extends React.Component {
 
   fetchStations() {
     const { longitude, latitude } = this.state.position;
-    const urlWithLocation = `${baseUrl}/stations/nearby?latitude=${latitude}&longitude=${longitude}&results=${maxNStations}`;
+    const urlWithLocation = `${baseUrl}/stations/nearby?latitude=${latitude}&longitude=${longitude}&results=${maxNumStations}`;
 
     fetch(urlWithLocation, this.requestOptions)
       .then(r => (r.ok ? r.json() : Promise.reject(r)))
-      .then(stations => {
-        const initialStations = stations.slice(0, initialNStations);
-        Promise.all(initialStations.map(this.fetchDepartures.bind(this)))
-          .then(stationsWithDepartures => {
-            const otherStations = stations.slice(initialNStations).map(x => {
-              return { station: x, departures: null, errorMessage: null };
-            });
-            console.log('otherStations', otherStations);
+      .then(stationsInfos => {
+        const stations = stationsInfos.map(x => {
+          return {
+            information: x,
+            departures: null,
+            errorMessage: null,
+            isFetching: false,
+          };
+        });
 
-            this.setState({
-              currentIndex: 0,
-              nStationsWithFetchedDepartes: initialNStations,
-              stations: [...stationsWithDepartures, ...otherStations],
-              loadingMessage: null,
-            });
-          })
-          .catch(err => console.log(err));
-      });
+        this.setState({
+          currentIndex: 0,
+          stations,
+          loadingMessage: null,
+        });
+
+        let i = 0;
+        while (i < initialNumStations && i < stations.length) {
+          this.fetchDepartures(i++);
+        }
+      })
+      .catch(error =>
+        this.setState({
+          errorMessage: `Something went wrong while fetching the nearest stations: ${error.message}`,
+        })
+      );
   }
 
-  fetchDepartures(station) {
-    const { maxMinutesToDeparture } = this.state.options;
-    const urlWithId = `${baseUrl}/stations/${station.id}/departures?duration=${maxMinutesToDeparture}`;
-
-    return new Promise((resolve, reject) => {
-      fetch(urlWithId, this.requestOptions)
-        .then(
-          r =>
-            r.ok
-              ? r.json()
-              : resolve({
-                  station,
-                  departures: [],
-                  errorMessage:
-                    'There was an error while fetching departes for this station.',
-                })
-        )
-        .then(departures => {
-          const departuresSorted = departures.sort((a, b) => a.when - b.when);
-          resolve({
-            station,
-            departures: departuresSorted,
-            errorMessage: null,
-          });
-        });
+  fetchDepartures(positionInStations) {
+    this.setState(oldState => {
+      const modifiedStations = oldState.stations;
+      modifiedStations[positionInStations].isFetching = true;
+      return { stations: modifiedStations };
     });
+
+    const { maxMinutesToDeparture } = this.state.options;
+    const stationId = this.state.stations[positionInStations].information.id;
+    const urlWithId = `${baseUrl}/stations/${stationId}/departures?duration=${maxMinutesToDeparture}`;
+
+    fetch(urlWithId, this.requestOptions)
+      .then(r => (r.ok ? r.json() : Promise.reject(r)))
+      .then(departures => {
+        const departuresSorted = departures.sort((a, b) => a.when - b.when);
+
+        this.setState(oldState => {
+          const modifiedStations = oldState.stations;
+          modifiedStations[positionInStations].isFetching = false;
+          modifiedStations[positionInStations].departures = departuresSorted;
+
+          return {
+            stations: modifiedStations,
+            nStationsWithFetchedDepartes:
+              oldState.nStationsWithFetchedDepartes + 1,
+          };
+        });
+      })
+      .catch(error => {
+        this.setState(oldState => {
+          const modifiedStations = oldState.stations;
+          modifiedStations[positionInStations].isFetching = false;
+          modifiedStations[
+            positionInStations
+          ].errorMessage = `Something went wrong while fetching the departues for the station: ${error.message}`;
+          return {
+            stations: modifiedStations,
+          };
+        });
+      });
   }
 
   render() {
@@ -198,11 +195,8 @@ export default class StationContainer extends React.Component {
       return (
         <StationCard
           ref={c => (this.stationDiv = c)}
-          key={currentStation.station.name}
-          departures={currentStation.departures}
-          station={currentStation.station}
-          errorMessage={currentStation.errorMessage}
-          isFetching={currentStation.isFetching}
+          key={currentStation.information.name}
+          station={currentStation}
         />
       );
     } else {

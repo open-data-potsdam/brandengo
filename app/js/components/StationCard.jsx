@@ -5,11 +5,12 @@ import { replaceWithDefault } from './../util';
 import DepartureRow from './DepartureRow';
 import Loading from './Loading';
 
-const StationCard = ({ errorMessage, station, departures, isFetching }) => {
-  let departureTable;
+const StationCard = ({ station }) => {
+  const { errorMessage, information, departures, isFetching } = station;
+  let departuresView;
 
   if (departures && departures.length) {
-    departureTable = (
+    departuresView = (
       <table>
         <thead>
           <tr>
@@ -19,12 +20,12 @@ const StationCard = ({ errorMessage, station, departures, isFetching }) => {
           </tr>
         </thead>
         <tbody>
-          {departures.map(x => (
-            <DepartureRow key={x.trip + x.when} departure={x} />
-          ))}
+          {departures.map((x, i) => <DepartureRow key={i} departure={x} />)}
         </tbody>
       </table>
     );
+  } else if (!isFetching && !errorMessage) {
+    departuresView = <p>No departures to show</p>;
   }
 
   let error;
@@ -32,40 +33,34 @@ const StationCard = ({ errorMessage, station, departures, isFetching }) => {
     error = <p>Error: {errorMessage}</p>;
   }
 
-  console.log('isFetching', isFetching);
   let loader;
   if (isFetching) {
-    loader = <Loading message={'is Fetching'} />;
+    loader = <Loading message={'Fetching Departures'} />;
   }
 
   return (
     <div className="station-card">
       <img
         onError={replaceWithDefault.bind(this)}
-        src={`img/stations/${station.id}.jpg`}
+        src={`img/stations/${information.id}.jpg`}
         alt="Station"
       />
-      <h2 className="station-name">{station.name}</h2>
+      <h2 className="station-name">{information.name}</h2>
       {error}
       {loader}
-      {departureTable}
+      {departuresView}
     </div>
   );
-
-  // return (
-  //   <div>
-  //     <h2>{station.name}</h2>
-  //     <p>Currently no departures</p>
-  //   </div>
-  // );
 };
 
 StationCard.propTypes = {
-  departures: PropTypes.array.isRequired,
-  errorMessage: PropTypes.string,
   station: PropTypes.shape({
-    name: PropTypes.string.isRequired,
-    id: PropTypes.string.isRequired,
+    departures: PropTypes.array,
+    errorMessage: PropTypes.string,
+    information: PropTypes.shape({
+      name: PropTypes.string.isRequired,
+      id: PropTypes.string.isRequired,
+    }),
   }).isRequired,
 };
 
