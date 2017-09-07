@@ -33,3 +33,33 @@
   /* Support for IE. */
   font-feature-settings: 'liga';
 }
+
+/* lato-regular - latin */
+@font-face {
+  font-family: 'Lato';
+  font-style: normal;
+  font-weight: 400;
+  src: url('../fonts/lato-v13-latin-regular.eot'); /* IE9 Compat Modes */
+  src: local('Lato Regular'), local('Lato-Regular'),
+    url('../fonts/lato-v13-latin-regular.eot?#iefix')
+      format('embedded-opentype'),
+    url('../fonts/lato-v13-latin-regular.woff2') format('woff2'),
+    url('../fonts/lato-v13-latin-regular.woff') format('woff'),
+    url('../fonts/lato-v13-latin-regular.ttf') format('truetype'),
+    url('../fonts/lato-v13-latin-regular.svg#Lato') format('svg'); /* Legacy iOS */
+}
+
+/* work-sans-regular - latin */
+@font-face {
+  font-family: 'Work Sans';
+  font-style: normal;
+  font-weight: 400;
+  src: url('../fonts/work-sans-v2-latin-regular.eot'); /* IE9 Compat Modes */
+  src: local('Work Sans'), local('WorkSans-Regular'),
+    url('../fonts/work-sans-v2-latin-regular.eot?#iefix')
+      format('embedded-opentype'),
+    url('../fonts/work-sans-v2-latin-regular.woff2') format('woff2'),
+    url('../fonts/work-sans-v2-latin-regular.woff') format('woff'),
+    url('../fonts/work-sans-v2-latin-regular.ttf') format('truetype'),
+    url('../fonts/work-sans-v2-latin-regular.svg#WorkSans') format('svg'); /* Legacy iOS */
+}
