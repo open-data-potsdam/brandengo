@@ -1,5 +1,8 @@
+@import 'fonts';
+
 $normal-space: 2rem;
-$primary-color: #1abc9c;
+// $primary-color: #1abc9c;
+$primary-color: #dd1c77; // http://colorbrewer2.org/#type=sequential&scheme=PuRd&n=3
 $grey: #f9f9f9;
 
 body {
@@ -57,6 +60,18 @@ th {
 .example-enter.example-enter-active {
   opacity: 1;
   transition: opacity 500ms ease-in;
+}
+
+.logo-box {
+  background-color: $primary-color;
+  display: inline-block;
+  padding: 1rem;
+}
+
+.logo-icon {
+  margin: auto;
+  color: white;
+  font-size: 5rem;
 }
 
 @import 'components/loading';

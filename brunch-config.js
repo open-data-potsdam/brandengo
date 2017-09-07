@@ -17,7 +17,10 @@ exports.plugins = {
     },
   },
   copycat: {
-    fonts: ['node_modules/bootstrap/dist/fonts'],
+    fonts: [
+      'node_modules/bootstrap/dist/fonts',
+      'node_modules/material-design-icons/iconfont',
+    ],
     onlyChanged: true,
   },
 };
