@@ -14,6 +14,7 @@ const StationCard = ({ station }) => {
       <table>
         <thead>
           <tr>
+            <th>Type</th>
             <th>Line</th>
             <th>Destination</th>
             <th>Departure</th>

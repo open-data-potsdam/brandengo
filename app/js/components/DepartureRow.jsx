@@ -1,6 +1,15 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
+const icons = [
+  'train',
+  'subway',
+  'tram',
+  'directions_bus',
+  'directions_boat',
+  'train',
+];
+
 export default class DepartureRow extends React.Component {
   render() {
     const departure = this.props.departure;
@@ -22,12 +31,13 @@ export default class DepartureRow extends React.Component {
     // in a dangarous way. (see further below)
     const direction = departure.direction.replace('/', '/<wbr>');
     const line = departure.line.name;
-    const type = departure.line.product;
-    const lineString = `${type} ${line}`;
 
     return (
       <tr>
-        <td key="line">{lineString}</td>
+        <td>
+          <i className="material-icons">{icons[departure.line.productCode]}</i>
+        </td>
+        <td key="line">{line}</td>
         <td key="direction" dangerouslySetInnerHTML={{ __html: direction }} />
         <td key="time">{timeString}</td>
       </tr>
