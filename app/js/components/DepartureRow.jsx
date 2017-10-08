@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import moment from 'moment';
 
 const icons = [
   'train',
@@ -12,18 +13,17 @@ const icons = [
 
 export default class DepartureRow extends React.Component {
   render() {
-    const departure = this.props.departure;
-    const time = new Date(departure.when);
-    const timeDif = time.getTime() - new Date().getTime();
-    const minutes = Math.floor(timeDif / (1000 * 60));
-    let timeString = `${minutes} min`;
-    if (minutes < 1) timeString = 'now';
-    if (minutes > 30) {
-      let hours = new String(time.getHours());
-      let minutes = new String(time.getMinutes());
-      hours = hours.length > 1 ? hours : `0${hours}`;
-      minutes = minutes.length > 1 ? minutes : `0${minutes}`;
-      timeString = `${hours}:${minutes}`;
+    const { departure } = this.props;
+
+    const time = moment(departure.when);
+    const difAsMinutes = Math.floor(
+      moment.duration(time.diff(moment())).asMinutes()
+    );
+    let timeString = 'now';
+    if (difAsMinutes > 30) {
+      timeString = time.format('H:mm');
+    } else if (difAsMinutes > 1) {
+      timeString = `${difAsMinutes} min`;
     }
 
     // somtimes, you have to break the line to prevent the table from fucking up.

@@ -1,6 +1,7 @@
 import Hammer from 'hammerjs';
 import React from 'react';
 import ReactDOM from 'react-dom';
+import moment from 'moment';
 
 import { buildRequestOptions } from './../util';
 import StationCard from './StationCard';
@@ -152,12 +153,12 @@ export default class StationContainer extends React.Component {
     fetch(urlWithId, this.requestOptions)
       .then(r => (r.ok ? r.json() : Promise.reject(r)))
       .then(departures => {
-        const departuresSorted = departures.sort((a, b) => a.when - b.when);
+        departures.sort((a, b) => moment(a.when).utc() - moment(b.when).utc());
 
         this.setState(oldState => {
           const modifiedStations = oldState.stations;
           modifiedStations[positionInStations].isFetching = false;
-          modifiedStations[positionInStations].departures = departuresSorted;
+          modifiedStations[positionInStations].departures = departures;
 
           return {
             stations: modifiedStations,
