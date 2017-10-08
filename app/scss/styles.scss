@@ -48,20 +48,6 @@ th {
   background: white;
 }
 
-.station-card img {
-  border-radius: 50%;
-  height: 10rem;
-}
-
-.example-enter {
-  opacity: 0.01;
-}
-
-.example-enter.example-enter-active {
-  opacity: 1;
-  transition: opacity 500ms ease-in;
-}
-
 .logo-box {
   background-color: $primary-color;
   display: inline-block;
