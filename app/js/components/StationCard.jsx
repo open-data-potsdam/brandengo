@@ -130,7 +130,7 @@ class StationCard extends React.Component {
     );
 
     return (
-      <div className="station-card">
+      <div>
         {img}
         <h2 className="station-name">{information.name}</h2>
         {error}
