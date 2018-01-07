@@ -60,7 +60,9 @@ export default class StationContainer extends React.Component {
     function failedLocated(error) {
       this.setState({
         loadingMessage: null,
-        errorMessage: `Something went wrong while getting your current GPS location: ${error.message}`,
+        errorMessage: `Something went wrong while getting your current GPS location: ${
+          error.message
+        }`,
       });
     }
 
@@ -112,14 +114,12 @@ export default class StationContainer extends React.Component {
     fetch(urlWithLocation, this.requestOptions)
       .then(r => (r.ok ? r.json() : Promise.reject(r)))
       .then(stationsInfos => {
-        const stations = stationsInfos.map(x => {
-          return {
-            information: x,
-            departures: null,
-            errorMessage: null,
-            isFetching: false,
-          };
-        });
+        const stations = stationsInfos.map(x => ({
+          information: x,
+          departures: null,
+          errorMessage: null,
+          isFetching: false,
+        }));
 
         this.setState({
           currentIndex: 0,
@@ -134,7 +134,9 @@ export default class StationContainer extends React.Component {
       })
       .catch(error =>
         this.setState({
-          errorMessage: `Something went wrong while fetching the nearest stations: ${error.message}`,
+          errorMessage: `Something went wrong while fetching the nearest stations: ${
+            error.message
+          }`,
         })
       );
   }
@@ -173,7 +175,9 @@ export default class StationContainer extends React.Component {
           modifiedStations[positionInStations].isFetching = false;
           modifiedStations[
             positionInStations
-          ].errorMessage = `Something went wrong while fetching the departues for the station: ${error.message}`;
+          ].errorMessage = `Something went wrong while fetching the departues for the station: ${
+            error.message
+          }`;
           return {
             stations: modifiedStations,
           };
@@ -195,13 +199,14 @@ export default class StationContainer extends React.Component {
       const currentStation = stations[currentIndex];
       return (
         <StationCard
-          ref={c => (this.stationDiv = c)}
+          ref={c => {
+            this.stationDiv = c;
+          }}
           key={currentStation.information.name}
           station={currentStation}
         />
       );
-    } else {
-      return <h2>No Stations Nearby</h2>;
     }
+    return <h2>No Stations Nearby</h2>;
   }
 }

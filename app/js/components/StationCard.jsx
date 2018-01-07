@@ -115,7 +115,7 @@ class StationCard extends React.Component {
 
     let loader;
     if (isFetching) {
-      loader = <Loading message={'Fetching Departures'} />;
+      loader = <Loading message="Fetching Departures" />;
     }
 
     const departuresWitth =
