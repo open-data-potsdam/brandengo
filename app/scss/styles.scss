@@ -4,6 +4,7 @@ $normal-space: 2rem;
 // $primary-color: #1abc9c;
 $primary-color: #dd1c77; // http://colorbrewer2.org/#type=sequential&scheme=PuRd&n=3
 $grey: #f9f9f9;
+$filter-center-width: 600px;
 
 body {
   background-color: $grey;
@@ -59,9 +60,22 @@ th {
   font-size: 5rem;
 }
 
+.about {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.menu-label {
+  position: absolute;
+  top: 0%;
+  left: 0%;
+}
 
 .header {
   text-align: center;
+  position: relative;
+  max-width: $filter-center-width;
+  margin: 0 auto;
 }
 
 @import 'components/loading';
