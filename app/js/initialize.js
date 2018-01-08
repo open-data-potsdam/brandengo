@@ -1,11 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-import StationContainer from './components/StationContainer';
+import Onboarding from './components/Onboarding';
 
 document.addEventListener('DOMContentLoaded', () => {
-  ReactDOM.render(
-    <StationContainer />,
-    document.getElementById('stationContainer')
-  );
+  ReactDOM.render(<Onboarding />, document.getElementById('stationContainer'));
 });
