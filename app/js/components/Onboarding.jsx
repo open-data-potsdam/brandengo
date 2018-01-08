@@ -6,7 +6,7 @@ import StationContainer from './StationContainer';
 class Onboarding extends React.Component {
   constructor() {
     super();
-    this.state = { beenHere: false };
+    this.state = { justClickedOkay: false };
   }
 
   componentDidMount() {
@@ -15,9 +15,10 @@ class Onboarding extends React.Component {
     }
   }
   render() {
-    if (this.state.beenHere) {
+    if (this.state.justClickedOkay || localStorage.getItem('beenHere')) {
       return <StationContainer />;
     }
+
     return (
       <div
         className="modal fade"
@@ -53,7 +54,7 @@ class Onboarding extends React.Component {
                 data-dismiss="modal"
                 onClick={() => {
                   localStorage.setItem('beenHere', '1');
-                  this.setState({ beenHere: true });
+                  this.setState({ justClickedOkay: true });
                 }}
               >
                 Ok verstanden. Los geht's!
