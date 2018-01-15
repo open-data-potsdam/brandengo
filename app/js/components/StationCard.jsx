@@ -2,6 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 
 import DepartureRow from './DepartureRow';
+import Fade from './Fade';
 import Loading from './Loading';
 
 const myHeaders = new Headers();
@@ -18,11 +19,20 @@ class StationCard extends React.Component {
   constructor(props) {
     super(props);
 
-    this.state = { imageSrc: null, isFetchingImageSrc: false };
+    this.state = {
+      imageSrc: null,
+      isFetchingImageSrc: false,
+      fadeAnimation: false,
+    };
   }
 
   componentDidMount() {
     this.buildPictureUrl(this.props.station.information.name);
+    this.setState({ fadeAnimation: true });
+  }
+
+  componentWillUnmount() {
+    this.setState({ fadeAnimation: false });
   }
 
   buildPictureUrl(name) {
@@ -130,13 +140,15 @@ class StationCard extends React.Component {
     );
 
     return (
-      <div>
-        {img}
-        <h2 className="station-name">{information.name}</h2>
-        {error}
-        {loader}
-        {departuresView}
-      </div>
+      <Fade in={this.state.fadeAnimation}>
+        <div>
+          {img}
+          <h2 className="station-name">{information.name}</h2>
+          {error}
+          {loader}
+          {departuresView}
+        </div>
+      </Fade>
     );
   }
 }
