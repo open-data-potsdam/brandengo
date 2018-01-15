@@ -78,4 +78,17 @@ th {
   margin: 0 auto;
 }
 
+$a-tags: 'a, a:active, a:hover, a:visited';
+$a-tags-hover: 'a:active, a:hover';
+
+#{$a-tags} {
+  color: #c4407d;
+  text-decoration: none;
+}
+
+#{$a-tags-hover} {
+  color: darken(#c4407d, 20);
+  text-decoration: underline;
+}
+
 @import 'components/loading';
