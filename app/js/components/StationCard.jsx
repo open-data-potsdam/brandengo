@@ -115,12 +115,12 @@ class StationCard extends React.Component {
         </table>
       );
     } else if (!isFetching && !errorMessage) {
-      departuresView = <p>No departures to show</p>;
+      departuresView = <p class="text-center">No departures to show</p>;
     }
 
     let error;
     if (errorMessage) {
-      error = <p>Error: {errorMessage}</p>;
+      error = <p class="text-center">Error: {errorMessage}</p>;
     }
 
     let loader;
@@ -142,7 +142,7 @@ class StationCard extends React.Component {
     return (
       <Fade in={this.state.fadeAnimation}>
         <div>
-          {img}
+          <div class="text-center">{img}</div>
           <h2 className="station-name">{information.name}</h2>
           {error}
           {loader}
