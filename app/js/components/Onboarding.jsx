@@ -43,9 +43,9 @@ class Onboarding extends React.Component {
               </h4>
             </div>
             <div className="modal-body text-center">
-              Hier werden dir Haltestellen mit Abfahrtszeiten aus deiner
-              Umgebung angezeigt.<br />
-              <br />Dazu brauchen wir aber deine genau Position.
+              Wir zeigen dir Haltestelle mit Abfahrtszeiten aus deiner Umgebung
+              an.<br />
+              <br />Dazu brauchen wir Zugriff auf deine Position.
             </div>
             <div className="modal-footer" style={{ 'text-align': 'center' }}>
               <button
@@ -57,7 +57,7 @@ class Onboarding extends React.Component {
                   this.setState({ justClickedOkay: true });
                 }}
               >
-                Ok verstanden. Los geht's!
+                OK. Los geht's!
               </button>
             </div>
           </div>
