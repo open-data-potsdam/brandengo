@@ -1,13 +1,130 @@
+/* http://colorbrewer2.org/#type=sequential&scheme=PuRd&n=3 */
+
 body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
-    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  background-color: #f9f9f9;
+  font-family: "Lato", sans-serif;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
-    monospace;
+.brand {
+  color: #dd1c77;
+  font-family: "Work Sans", sans-serif;
+  margin: 2rem 0;
+}
+
+.logo {
+  height: 5rem;
+}
+
+.station-name {
+  text-align: center;
+  margin: 2rem 0 2rem * 2;
+}
+
+table {
+  border-collapse: collapse;
+  margin: 0 auto;
+  max-width: 600px;
+  width: 100%;
+}
+
+th:nth-child(4),
+td:nth-child(4) {
+  text-align: right;
+}
+
+th,
+td {
+  padding: 0.75em;
+}
+
+tr:nth-child(even),
+th {
+  background: white;
+}
+
+.logo-box {
+  background-color: #dd1c77;
+  display: inline-block;
+  padding: 1rem;
+}
+
+.logo-icon {
+  margin: auto;
+  color: white;
+  font-size: 5rem;
+}
+
+.about {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.menu-label {
+  position: absolute;
+  top: 0%;
+  left: 0%;
+}
+
+.header {
+  text-align: center;
+  position: relative;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+a,
+a:active,
+a:hover,
+a:visited {
+  color: #c4407d;
+  text-decoration: none;
+}
+
+a:active,
+a:hover {
+  color: darken(#c4407d, 20);
+  text-decoration: underline;
+}
+
+.fade-enter {
+  opacity: 0.01;
+}
+
+.fade-enter.fade-enter-active {
+  opacity: 1;
+  transition: opacity 500ms ease-in;
+}
+
+.fade-exit {
+  opacity: 1;
+}
+
+.fade-exit.fade-exit-active {
+  opacity: 0.01;
+  transition: opacity 300ms ease-in;
+}
+
+.loading .message {
+  text-align: center;
+  margin: 2rem 0 2rem * 2;
+}
+
+.loading .circle {
+  border: 1em solid white;
+  border-top: 1em solid #dd1c77;
+  border-radius: 50%;
+  width: 8em;
+  height: 8em;
+  animation: spin 2s linear infinite;
+  margin: 0 auto;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
 }
