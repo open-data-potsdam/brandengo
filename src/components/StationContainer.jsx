@@ -1,21 +1,12 @@
 import Hammer from "hammerjs";
 import React from "react";
-import moment from "moment";
-import vbb from "vbb-client";
 
 import Loading from "./Loading";
 import StationCard from "./StationCard";
+import { Mobilitybox } from '../Mobilitybox';
 
-// https://transport.rest/
-const vbbClient = vbb({
-  endpoint: "https://1.bvg.transport.rest"
-});
-
-const maxNumStations = 50; // FIXME: Looks like the cap is at 35
+const mobilitybox = new Mobilitybox("enter-your-key-here");
 const initialNumStations = 2;
-
-const getIdentifier = () =>
-  window.location.hostname === "localhost" ? "brandengo-development" : null;
 
 export default class StationContainer extends React.Component {
   constructor(props) {
@@ -47,6 +38,10 @@ export default class StationContainer extends React.Component {
     // subscribe to touch events
     this.hammerjsElement.on("swipeleft", this.swipeLeft);
     this.hammerjsElement.on("swiperight", this.swipeRight);
+
+    mobilitybox.get_attributions(attributions => {
+      document.getElementById("attributions").innerHTML = attributions.html;
+    })
   }
 
   getLocation() {
@@ -111,39 +106,25 @@ export default class StationContainer extends React.Component {
   // }
 
   fetchStations() {
-    const { longitude, latitude } = this.state.position;
-    const queryParams = { latitude, longitude, results: maxNumStations };
-    const indentifier = getIdentifier();
-    if (indentifier !== null) {
-      queryParams.identifier = indentifier;
-    }
-    const request = vbbClient.nearby(queryParams);
+    mobilitybox.find_stations_by_position(this.state.position, mobilitybox_stations => {
+      const stations = mobilitybox_stations.map(x => ({
+        information: x,
+        departures: null,
+        errorMessage: null,
+        isFetching: false
+      }));
 
-    request
-      .then(stationsInfos => {
-        const stations = stationsInfos.map(x => ({
-          information: x,
-          departures: null,
-          errorMessage: null,
-          isFetching: false
-        }));
-
-        this.setState({
-          currentIndex: 0,
-          stations,
-          loadingMessage: null
-        });
-
-        let i = 0;
-        while (i < initialNumStations && i < stations.length) {
-          this.fetchDepartures(i++);
-        }
+      this.setState({
+        currentIndex: 0,
+        stations,
+        loadingMessage: null
       })
-      .catch(error =>
-        this.setState({
-          errorMessage: `Something went wrong while fetching the nearest stations: ${error.message}`
-        })
-      );
+
+      let i = 0;
+      while (i < initialNumStations && i < stations.length) {
+        this.fetchDepartures(i++);
+      }
+    });
   }
 
   fetchDepartures(positionInStations) {
@@ -153,41 +134,19 @@ export default class StationContainer extends React.Component {
       return { stations: modifiedStations };
     });
 
-    const { maxMinutesToDeparture } = this.state.options;
-    const stationId = this.state.stations[positionInStations].information.id;
+    const station = this.state.stations[positionInStations].information;
+    station.get_next_departures(departures => {
+      this.setState(oldState => {
+        const modifiedStations = oldState.stations;
+        modifiedStations[positionInStations].isFetching = false;
+        modifiedStations[positionInStations].departures = departures;
 
-    const request = vbbClient.departures(stationId, {
-      duration: maxMinutesToDeparture
-    });
-
-    request
-      .then(departures => {
-        departures.sort((a, b) => moment(a.when).utc() - moment(b.when).utc());
-
-        this.setState(oldState => {
-          const modifiedStations = oldState.stations;
-          modifiedStations[positionInStations].isFetching = false;
-          modifiedStations[positionInStations].departures = departures;
-
-          return {
-            stations: modifiedStations,
-            nStationsWithFetchedDepartes:
-              oldState.nStationsWithFetchedDepartes + 1
-          };
-        });
-      })
-      .catch(error => {
-        this.setState(oldState => {
-          const modifiedStations = oldState.stations;
-          modifiedStations[positionInStations].isFetching = false;
-          modifiedStations[
-            positionInStations
-          ].errorMessage = `Something went wrong while fetching the departues for the station: ${error.message}`;
-          return {
-            stations: modifiedStations
-          };
-        });
+        return {
+          stations: modifiedStations,
+          nStationsWithFetchedDepartes: oldState.nStationsWithFetchedDepartes + 1
+        };
       });
+    });
   }
 
   render() {

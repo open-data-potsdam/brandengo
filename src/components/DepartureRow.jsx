@@ -2,20 +2,17 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import moment from 'moment';
 
-const icons = [
-  'train',
-  'subway',
-  'tram',
-  'directions_bus',
-  'directions_boat',
-  'train',
-];
+const icons = {
+  "Bus": "directions_bus",
+  "Str": "tram",
+  "U": "subway"
+}
 
 export default class DepartureRow extends React.Component {
   render() {
     const { departure } = this.props;
 
-    const time = moment(departure.when);
+    const time = moment(new Date(departure.departure_time.scheduled_at));
     const difAsMinutes = Math.floor(
       moment.duration(time.diff(moment())).asMinutes()
     );
@@ -26,16 +23,13 @@ export default class DepartureRow extends React.Component {
       timeString = `${difAsMinutes} min`;
     }
 
-    // somtimes, you have to break the line to prevent the table from fucking up.
-    // because we have genereted dynamicly html, we have to set the html
-    // in a dangarous way. (see further below)
-    const direction = departure.direction.replace('/', '/<wbr>');
-    const line = departure.line.name;
+    const direction = departure.headsign;
+    const line = departure.line_name;
 
     return (
       <tr>
         <td>
-          <i className="material-icons">{icons[departure.line.productCode]}</i>
+          <i className="material-icons">{icons[departure.type] || "train"}</i>
         </td>
         <td key="line">{line}</td>
         <td key="direction" dangerouslySetInnerHTML={{ __html: direction }} />
